@@ -1,0 +1,50 @@
+<div class="container-fluid bg">
+	<div class="row">
+	    <div class="col-xs-0 col-sm-3 col-md-4"></div>
+		<div class="col-xs-12 col-sm-6 col-md-4 loginBody">
+		    <div class="panel panel-default login loginCard">
+                <div class="panel-body" style="width:100%;">
+                    <div class="row padt20">
+                        <div class="col-md-12 col-sm-12 col-xs-12 center">
+                            <img ng-src="img/logo.png" style="height: 40px;width:150px;" alt="LOGO"></img>
+                        </div>
+                    </div>
+                
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12 center font-18 padt10">
+                            <span style="color:#4c4c4c">Project Title</span>
+                        </div>
+                    </div>
+                    
+                   <form name="loginForm" novalidate class="form-horizontal" style="margin-top: 50px;">
+                       	</fieldset>
+                            <div class="input-group inputheight">    
+                                <input type="text" name="username" placeholder="Username or Email Address" ng-model="user.username" required>
+                                
+                                <span ng-show="loginForm.username.$touched && loginForm.username.$error.required">
+                                    <span class="invalid">The username is required.</span>
+                                </span>
+                                        
+                            </div>
+                                
+                            <div class="input-group inputheight">      
+                                <input name="password" type="password" placeholder="Password" ng-model="user.password" ng-enter="doLogin()"  required>
+                                
+                                
+                                <span ng-show="loginForm.password.$touched && loginForm.password.$error.required">
+                                    <span class="invalid">The password is required.</span>
+                                </span>
+                            </div>
+                              
+                            <div class="input-group padt20" style="width:100%;"> 
+                                  <button type="button" class="btn btn-primary btnlogin" ng-click="doLogin()" ng-disabled="!loginForm.$valid" style="width:100%">LOGIN</button>
+                            </div>
+                      
+                    	</fieldset>
+                    </form>
+                </div>
+            </div>
+		</div>
+		<div class="col-xs-0 col-sm-3 col-md-4"></div>
+	</div>
+</div>

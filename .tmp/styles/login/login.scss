@@ -1,0 +1,65 @@
+// Shared variables and mixins
+@import 
+    "../global/var"                        // global variables
+,   "../global/var-extra"                  // extra global variables
+;
+.loginBody{
+    padding: 20px;
+    position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);-webkit-transform: translate(-50%, -50%);-moz-transform: translate(-50%, -50%);-o-transform: translate(-50%, -50%);-ms-transform: translate(-50%, -50%);
+}
+
+*{
+  font-family: "Roboto","Helvetica Neue",Arial,sans-serif;
+}
+.login .loginCard{
+  -webkit-box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+.login .invalid {
+  font-size: 11px;
+  color: #f02925;
+}
+.login .btn {
+  background-color: #337ab7;
+}
+.bg{
+	height: 100vh;
+    width: 100vw;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background-image: url('../#{$image_path}bg.jpg');
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: cover;
+    position: relative;
+    overflow: hidden;
+}
+form input {
+    margin: 5px;
+    padding: 5px;
+    width: 100%;
+    background: #fff;
+    border: 0;
+    border-bottom: 1px solid #CCCCCC;
+    font-weight: 40px;
+    color: black;
+    font-size: 15px;
+    margin-left: 0;
+}
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+.inputheight {
+  width: 100%;
+  height: 80px;
+}

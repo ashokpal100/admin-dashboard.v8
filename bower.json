@@ -1,0 +1,37 @@
+{
+  "name": "admin-dashboard.v8",
+  "description": "",
+  "main": "server.js",
+  "authors": [
+    "ashok pal"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/ashokpal100/admin-dashboard.v8",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.6.9",
+    "oclazyload": "1.1.0",
+    "angular-ui-router": "1.0.14",
+    "bootstrap": "3.3.7",
+    "font-awesome": "4.7.0",
+    "angular-bootstrap": "2.5.0",
+    "angular-material": "1.1.5",
+    "angular-animate": "1.6.9",
+    "angular-ui-notification": "0.3.6",
+    "bootstrap-datepicker": "1.7.1",
+    "angular-cookies": "1.6.9",
+    "ngECharts": "ngecharts#0.2.0",
+    "bootstrap-material-design-icons": "2.2.0",
+    "angular-local-storage": "^0.7.1",
+    "jquery-slimscroll": "jquery-slimScroll#^1.3.8",
+    "angular-scroll": "^1.0.2",
+    "ngmap": "^1.18.4"
+  }
+}

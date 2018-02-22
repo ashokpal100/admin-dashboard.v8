@@ -1,0 +1,34 @@
+
+// Shared variables and mixins
+@import 
+    "global/var"                        // global variables
+,   "global/var-extra"                  // extra global variables
+;
+@import 
+    "pages/auth"
+// Pages
+// ,   "global/var-pages"
+// ,   "pages/dashboard"
+// ,   "pages/pages"
+// ,   "pages/error"
+// ,   "pages/auth"
+// ,   "pages/profile"
+// ,   "pages/invoice"
+// ,   "pages/features"
+// ,   "pages/demo"
+// ,   "pages/demo-material"
+// ,   "pages/monitoring"
+
+// sections
+// ,   "layout/layouts"
+// ,   "layout/nav"
+// ,   "layout/nav-off-canvas"
+// ,   "layout/nav-horizontal"
+// ,   "layout/nav-min"
+// ,   "layout/nav-color"
+// ,   "layout/header"
+// ,   "layout/body"
+// ,   "layout/quickview"
+// ,   "layout/quickview-customizer"
+// ,   "theme/customzier-options"
+;

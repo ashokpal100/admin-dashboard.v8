@@ -8,25 +8,22 @@
     <meta name="viewport" content="width=device-width , initial-scale=1" />
     <link href = "https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href = "https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" rel="stylesheet">
-    <!--build:css css/vendor.bundle.min.css-->
+    <!-- build:css({.tmp,client}) styles/main.css -->
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css" type="text/css">
     <link rel="stylesheet" href="/bower_components/angular-material/angular-material.min.css">
     <link rel="stylesheet" href="/bower_components/angular-ui-notification/dist/angular-ui-notification.min.css">
     <link rel="stylesheet" href="/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css"></link>
     <link rel="stylesheet" href="/bower_components/bootstrap-material-design-icons/css/material-icons.min.css">
-    <!--endbuild-->
-    <!--build:css css/main.bundle.min.css-->
-    <link rel="stylesheet" href="/styles/loader.css">
-    <link rel="stylesheet" href="/styles/app.css">
-    <link rel="stylesheet" href="/styles/login/login.css">
+    <link rel="stylesheet" href="styles/loader.css">
+    <link rel="stylesheet" href="styles/ui.css">
+    <link rel="stylesheet" href="styles/app.css">
     <!--endbuild-->
   </head>
     <body data-ng-app="app" id="app" class="app" data-ng-controller="AppCtrl">
         <div id="loader-container"></div>
         <div ui-view></div>
-        <!-- build:js scripts/vendor.bundle.min.js -->
-        <!-- bower:js -->
+        <!-- build:js scripts/vendor.js -->
         <script src="/bower_components/jquery/dist/jquery.min.js"></script>
         <script src="/bower_components/angular/angular.min.js"></script>
         <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -44,23 +41,29 @@
         <script src="/bower_components/angular-local-storage/dist/angular-local-storage.min.js"></script>
         <script src="bower_components/angular-scroll/angular-scroll.min.js"></script>
         <script src="/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+        <!-- endbuild -->
+        
+        <!-- build:js scripts/ui.js -->
         <script src="/vendors/echarts-en.min.js"></script>
         <script src="/vendors/ngecharts.js"></script>
-        <!-- endbower -->
         <!-- endbuild -->
-        <!--build:js scripts/main.bundle.min.js -->
+        
+        <!-- build:js scripts/app.js -->
+        <!-- inject:js -->
         <script src="app/app.module.js"></script>
         <script src="app/core/core.module.js"></script>
-        <script src="app/layout/loader.js"></script>
+        <script src="app/core/featureModules/chart/chart.module.js"></script>
         <script src="app/globalConfig.js"></script>
-        
         <script src="app/core/app.config.js"></script>
         <script src="app/core/app.controller.js"></script>
         <script src="app/core/config.lazyload.js"></script>
         <script src="app/core/config.route.js"></script>
-
+        <script src="app/dashboard/dashboard.controller.js"></script>
+        <script src="app/dashboard/dashboardServices.js"></script>
+        <script src="app/layout/loader.js"></script>
         <script src="app/login/login.controller.js"></script>
         <script src="app/login/loginService.js"></script>
+        <!-- endinject -->
         <!-- endbuild -->
     </body>
 </html>

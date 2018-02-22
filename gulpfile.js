@@ -1,19 +1,76 @@
 var gulp = require('gulp');
-var $ = require('gulp-load-plugins')({lazy: true});
-var config = require('./gulp.config')();
+var args = require('yargs').argv;
 var browserSync = require('browser-sync');
+var config = require('./gulp.config')();
 var del = require('del');
-var reload = browserSync.reload;
-var modRewrite = require('connect-modrewrite');    
-var runSequence = require('run-sequence');
-var minifyHTML = require('gulp-minify-html');
+var $ = require('gulp-load-plugins')({lazy: true});
+var modRewrite = require('connect-modrewrite'); 
 
 
-/**
- * Gulp Tasks
- */
- 
- gulp.task('sass', function() {
+var middlewareUrl = [ modRewrite(['!\.html|\.woff|\.woff2|\.eot|\.ttf|\.svg|\.js|\.jpg|\.mp4|\.mp3|\.gif|\.svg\|.css|\.png$ /index.html [L]']) ]
+
+gulp.task('help', $.taskListing);
+gulp.task('default', ['help']);
+
+gulp.task('vet', function() {
+    log('Analyzing source with JSHint and JSCS');
+
+    return gulp
+        .src(config.alljs)
+        .pipe($.if(args.verbose, $.print()))
+        .pipe($.jscs())
+        .pipe($.jshint())
+        .pipe($.jshint.reporter('jshint-stylish', {verbose: true}))
+        .pipe($.jshint.reporter('fail'));
+});
+
+gulp.task('clean-tmp', function(done) {
+    var files = config.tmp;
+    clean(files, done);
+});
+
+gulp.task('clean', function(done) {
+    var delconfig = [].concat(config.dist, config.tmp);
+    log('Cleaning ' + $.util.colors.blue(delconfig));
+    del(delconfig, done);
+});
+
+gulp.task('clean-all', function(done) {
+    var delconfig = config.allToClean;
+    log('Cleaning ' + $.util.colors.blue(delconfig));
+    clean(delconfig, done);
+});
+
+gulp.task('pug-docs', function() {
+    log('Compiling docs pug --> html');
+
+    var options = {
+        pretty: false
+    }
+
+    return gulp
+        .src(config.docsPug)
+        .pipe($.plumber({errorHandler: swallowError}))
+        .pipe($.pug(options))
+        .pipe(gulp.dest(config.docs));
+});
+
+gulp.task('less', function() {
+    log('Compiling Less --> CSS');
+
+    return gulp
+        .src(config.less)
+        .pipe($.plumber({errorHandler: swallowError}))
+        .pipe($.less())
+        .pipe($.autoprefixer())
+        .pipe(gulp.dest(config.tmp));
+});
+
+gulp.task('less-watcher', function() {
+    gulp.watch([config.less], ['less']);
+});
+
+gulp.task('sass', function() {
     log('Compiling Sass --> CSS');
 
     var sassOptions = {
@@ -27,64 +84,110 @@ var minifyHTML = require('gulp-minify-html');
         .pipe($.sass(sassOptions))
         .pipe($.autoprefixer())
         .pipe($.sourcemaps.write())
-        .pipe(gulp.dest(config.client + '/styles'));
-});
- 
- // inject from html file css and js file for minification
-gulp.task('inject', function(){
-  log('Injecting custom scripts and css from index.html');
-  return gulp.src(config.client+'/*.html')
-    .pipe($.useref())
-    .pipe($.if('*.js', $.uglify({compress: {drop_console: true}})))
-    .pipe($.if('*.css', $.cssnano()))
-    .pipe(gulp.dest('dist'))
+        .pipe(gulp.dest(config.tmp + '/styles'));
 });
 
+gulp.task('sass-min', function() {
+    log('Compiling Sass --> minified CSS');
 
-// copy images,fonts,views and js files
-gulp.task('copy', function(){
-  log('copy images,fonts,views and js files to dist')
-  gulp.src(config.client+'/img/**/*.+(png|jpg|jpeg|gif|svg)')
-    .pipe($.cache($.imagemin({interlaced: true})))
-    .pipe(gulp.dest('dist/img'))
-  gulp.src(config.client+'/fonts/**/*')
-    .pipe(gulp.dest('dist/fonts'))
-  gulp.src(config.client+'/views/**/*')
-    .pipe(gulp.dest('dist/views'))
-    
-  return gulp.src(config.client+'/js/**/**/**/**/*')
-  .pipe(gulp.dest('dist/js'))
+    var sassOptions = {
+        outputStyle: 'compressed' // nested, expanded, compact, compressed
+    };
+
+    return gulp
+        .src(config.sass)
+        .pipe($.plumber({errorHandler: swallowError}))
+        .pipe($.sass(sassOptions))
+        .pipe($.autoprefixer())
+        .pipe(gulp.dest(config.tmp + '/styles'));    
+})
+
+gulp.task('sass-watcher', function() {
+    gulp.watch([config.sass], ['sass']);
 });
 
-//minify css,html and js files
-gulp.task('minify', function() {
-  log('minify css,html and js files')
-	var opts = {comments:true,spare:true};
-  gulp.src('dist/views/**/**/**/**/*.js')
-    .pipe($.uglify({compress: {drop_console: true}}))
-    .pipe(gulp.dest('dist/views/'));
-    
-  gulp.src('dist/views/**/**/**/**/*.html')
-    .pipe(minifyHTML(opts))
-    .pipe(gulp.dest('dist/views/'))
-    
-  gulp.src('dist/views/**/**/**/**/*.css')
-    .pipe($.useref())
-    .pipe($.if('*.css', $.cssnano()))
-    .pipe(gulp.dest('dist/views/'))
-    
-  return gulp.src('dist/index.html')
-    .pipe(minifyHTML(opts))
-    .pipe(gulp.dest('dist'))
-    
+gulp.task('inject', function() {
+    log('Injecting custom scripts to index.html');
+
+    return gulp
+        .src(config.index)
+        .pipe( $.inject(gulp.src(config.js), {relative: true}) )
+        .pipe(gulp.dest(config.client));
+});
+
+gulp.task('copy', ['sass-min'], function() {
+    log('Copying assets');
+
+    var assets = [].concat(config.assetsLazyLoad, config.assetsToCopy);
+
+    gulp.src(config.tmp + '/styles/loader.css').pipe(gulp.dest(config.dist + '/styles'));
+
+    return gulp
+        .src(assets, {base: config.client})
+        .pipe(gulp.dest(config.dist + '/'));
+});
+
+gulp.task('optimize', ['inject', 'sass-min'], function() {
+    log('Optimizing the js, css, html');
+
+    return gulp
+        .src(config.index)
+        .pipe($.plumber({errorHandler: swallowError}))
+        .pipe($.useref())
+        .pipe($.if('scripts/app.js', $.uglify()))
+        .pipe(gulp.dest( config.dist ));
+
 });
 
 
-gulp.task('browser-sync', function() {
-  var options = {
+gulp.task('serve', ['inject', 'sass'], function() {
+    startBrowserSync('serve');
+});
+
+gulp.task('build', ['optimize', 'copy'], function() {
+    startBrowserSync('dist');
+})
+
+gulp.task('serve-dist', function() {
+    gulp.run('build');
+})
+
+gulp.task('serve-docs', ['pug-docs'], function() {
+    startBrowserSync('docs');
+})
+
+function clean(path, done) {
+    log('Cleaning: ' + $.util.colors.blue(path));
+    del(path, done);
+}
+
+function log(msg) {
+    if (typeof(msg) === 'object') {
+        for (var item in msg) {
+            if (msg.hasOwnProperty(item)) {
+                $.util.log($.util.colors.green(msg[item]));
+            }
+        }
+    } else {
+        $.util.log($.util.colors.green(msg));
+    }
+}
+
+function swallowError (error) {
+    // If you want details of the error in the console
+    console.log(error.toString());
+
+    this.emit('end');
+}
+
+function startBrowserSync(opt) {
+    if (args.nosync || browserSync.active) {
+        return;
+    }
+
+    var options = {
         port: 8000,
-        host: '*',
-        logger: 'dev',
+        host: '0.0.0.0',
         ghostMode: {
             clicks: false,
             location: false,
@@ -99,98 +202,72 @@ gulp.task('browser-sync', function() {
         reloadDelay: 0, //1000,
         online: true
     };
-    options.server = {
-            baseDir: config,
-            middleware: [
-                       modRewrite(['!\.html|\.woff|\.woff2|\.eot|\.ttf|\.svg|\.js|\.jpg|\.mp4|\.mp3|\.gif|\.svg\|.css|\.png$ /index.html [L]'])
-                ]
+
+    switch(opt) {
+        case 'dist':
+            log('Serving dist app');
+            serveDistApp();
+            break;
+        case 'docs':
+            log('Serving docs');
+            serveDocs();
+            break;
+        default:
+            log('Serving app');
+            serveApp();
+            break;
+    }
+
+    function serveApp() {
+        gulp.watch([config.sass], ['sass']);
+
+        options.server = {
+            baseDir: [
+                config.client,
+                config.tmp
+            ]
+            ,
+            middleware: middlewareUrl
         };
-
-  browserSync(options);
+        options.files = [
+            config.client + '/**/*.*',
+            '!' + config.sass,
+            config.tmp + '/**/*.css'
+        ];
         
-      
-});
+        console.log(options);
 
-gulp.task('nodemon', function (cb) {
-  var called = false;
-  return $.nodemon({
-    script: 'server.js',
-    ignore: [
-      'gulpfile.js',
-      'node_modules/'
-    ]
-  })
-  .on('start', function () {
-    if (!called) {
-      called = true;
-      cb();
+        browserSync(options);
     }
-  })
-  .on('restart', function () {
-    setTimeout(function () {
-      reload({ stream: false });
-    }, 100);
-  });
-});
 
+    function serveDistApp() {
+        options.server = {
+            baseDir: [
+                config.dist
+            ],
+            middleware: middlewareUrl
+        };
+        options.files = [];
 
-gulp.task('watch', ['browser-sync'], function () {
-  // watch all files
-  gulp.watch([config.client+'/**/**/**.*'], reload);
-  
-  // watch scss files
-  gulp.watch(config.sass,['sass']);
-  
-});
+        browserSync(options);
+    }
 
-// delete dist
-gulp.task('clean', function() {
-  return del.sync('dist');
-})
+    function serveDocs() {
+        gulp.watch([config.docsPug], ['pug-docs']);
 
-// clear cache
-gulp.task('cache:clear', function () {
-    return $.cache.clearAll()
-})
-
-function log(msg) {
-    if (typeof(msg) === 'object') {
-        for (var item in msg) {
-            if (msg.hasOwnProperty(item)) {
-                $.util.log($.util.colors.green(msg[item]));
-            }
+        options.server = {
+            baseDir: [
+                config.docs
+            ],
+            middleware: middlewareUrl
         }
-    } else {
-        $.util.log($.util.colors.green(msg));
+
+        options.files = [
+            config.docs + '/index.html',
+            '!' + config.pug
+        ];
+
+        browserSync(options);
     }
+
 }
-
-
-function swallowError (error) {
-    // If you want details of the error in the console
-    console.log(error.toString());
-
-    this.emit('end');
-}
-
-
-
-gulp.task('dev', function () {
-    runSequence(
-        'sass',
-        'watch');
-});
-
-gulp.task('default', function () {
-    gulp.run('dev');
-});
-
-
-gulp.task('prod', function(){
-    runSequence(
-        'clean',
-        'cache:clear',
-        ['inject','copy','minify'],
-        'nodemon'
-    );
-});

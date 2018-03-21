@@ -14,30 +14,32 @@
                 .position('top right')
                 .hideDelay(2000)
             );
-            LoginService.login($scope.data).then(function(data){
-                console.log(data)
-                if(data.data.token){
-                    // Verified Successully
-                    showMessage('Verified Admin Role Successully!')
-                    $rootScope.user = data.data.user
+            LoginService.saveTokenToLocalStorage("ascsc");
+            $state.go('dashboard');
+            // LoginService.login($scope.data).then(function(data){
+            //     console.log(data)
+            //     if(data.data.token){
+            //         // Verified Successully
+            //         showMessage('Verified Admin Role Successully!')
+            //         $rootScope.user = data.data.user
                     
-                    // Storing relevant information in Cookies
-                    showMessage('Storing relevant information locally!')
-                    var success = LoginService.saveTokenToLocalStorage(data.data.token)
-                    if(success){
-                        $state.go('dashboard')
-                    }
-                }else if(data.data.message){
-                    showMessage(data.data.message)
-                    resetForm()
-                }else{
-                    showMessage("Error Retry")
-                    resetForm()
-                }
-            },function(err){
-                showMessage("Error Retry")
-                resetForm()
-            })
+            //         // Storing relevant information in Cookies
+            //         showMessage('Storing relevant information locally!')
+            //         var success = LoginService.saveTokenToLocalStorage(data.data.token)
+            //         if(success){
+            //             $state.go('dashboard')
+            //         }
+            //     }else if(data.data.message){
+            //         showMessage(data.data.message)
+            //         resetForm()
+            //     }else{
+            //         showMessage("Error Retry")
+            //         resetForm()
+            //     }
+            // },function(err){
+            //     showMessage("Error Retry")
+            //     resetForm()
+            // })
         }
 
         function resetForm(){

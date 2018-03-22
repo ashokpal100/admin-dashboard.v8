@@ -37,19 +37,20 @@
       // console.log(m);
       msg_from_stomp = JSON.parse(m.body);
       console.log(msg_from_stomp);
-      if ($scope.inOutStatus.length) {
-        
-        for (var i = 0; i < $scope.inOutStatus.length; i++) {
-          // $scope.inOutStatus[i];
-          if ($scope.inOutStatus[i].kid_name==msg_from_stomp.kid_name) {
 
+      if ($scope.inOutStatus.length) {
+        var already_exist = 0;
+        for (var i = 0; i < $scope.inOutStatus.length; i++) {
+          
+          if ($scope.inOutStatus[i].kid_name==msg_from_stomp.kid_name) {
               $scope.inOutStatus[i].datetime = msg_from_stomp.datetime;
               $scope.inOutStatus[i].status = msg_from_stomp.status;
-
-          }else{
-            $scope.inOutStatus.push(msg_from_stomp);
+              already_exist = 1;
           }
         }
+        if (!already_exist) {
+          $scope.inOutStatus.push(msg_from_stomp);
+        } 
 
       }else{
           $scope.inOutStatus.push(msg_from_stomp);

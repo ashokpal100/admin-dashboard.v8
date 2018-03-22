@@ -1,7 +1,7 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">WebSiteName</a>
+      <a class="navbar-brand" href="#">Fluid</a>
     </div>
     <ul class="nav navbar-nav">
       <li class="active"><a href="#">Home</a></li>
@@ -16,11 +16,11 @@
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>-->
-      <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+      <li style="cursor: pointer;"><a ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
     </ul>
   </div>
 </nav>
-<div class="container-fluid" style="padding-top:50px;">
+<div class="container-fluid" style="padding-top:50px;" data-ng-controller="dashboardCtrl">
     <div class="row">
         <div class="col-md-8">
             <div style="position:absolute;text-align: center;">
@@ -39,6 +39,31 @@
             </div>
         </div>
         <div class="col-md-4">
+            <p>IN/OUT STATUS</p>
+            <table class="table table-striped table-bordered table-hover" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Date Time</th>
+                    <th>IN/OUT Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="kid in inOutStatus">
+                    <td>{{kid.kid_name}}</td>
+                    <td>{{kid.datetime}}</td>
+                    <td>
+                        <span ng-if="kid.status=='exit'" style="color: red;font-weight: bold">{{kid.status}}</span>
+                        
+                        <span ng-if="kid.status=='entered'" style="color: green;font-weight: bold">{{kid.status}}</span>
+                        
+                    </td>
+                  </tr>
+                  
+                </tbody>
+              </table>
+
+            <!-- <p>------------</p>
             <table class="table table-striped table-bordered table-hover" style="width:100%">
                 <thead>
                   <tr>
@@ -64,27 +89,7 @@
                     <td>july@example.com</td>
                   </tr>
                 </tbody>
-              </table>
+              </table> -->
         </div>
     </div>
 </div>
-<!--<div class="row">-->
-<!--    <div class="col-md-12 col-xs-12" style="text-align: center;">-->
-        
-<!--        <div style="position:absolute;text-align: center;">-->
-<!--            <img ng-src="images/desk.jpg" style="height: 530px;width: 1000px">-->
-<!--                <div ng-repeat="desk in desk_xy" style="background-color: {{desk.use=='1'?'green':'red'}};border-radius:50%;text-align:center;padding-top: 4px;color:black;border:1px solid black;border-color: black;width: 15px;height:15px;position: absolute;left:{{desk.left}}px;top:{{desk.top}}px;cursor: pointer;"  class="hover" tooltip-html-unsafe="{{myTooltip()}}" tooltip-trigger="mouseenter" tooltip-placement="top">-->
-                
-<!--                    <div class="tooltip-content">-->
-<!--                        <p class="booker-name">Desk : {{desk.devid}}</p>-->
-<!--                        <p class="booker-name">UUID : {{desk.uuid}}</p>-->
-<!--                        <p class="booker-name">Date Time : {{desk.EndDatetime}}</p>-->
-<!--                        <p class="booker-name" ng-if="desk.use=='1'">Status : Occupied</p>-->
-<!--                        <p class="booker-name" ng-if="desk.use!='1'">Status : Not Occupied</p>-->
-<!--                    </div>-->
-
-<!--                </div>-->
-<!--        </div>-->
-        
-<!--    </div>-->
-<!--</div>-->

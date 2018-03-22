@@ -2,9 +2,9 @@
     'use strict';
 
     angular.module('app')
-        .controller('AppCtrl', [ '$scope', '$rootScope', '$state', '$document', 'appConfig','LoginService', AppCtrl]); // overall control
+        .controller('AppCtrl', [ '$scope', '$rootScope', '$state', '$document', 'appConfig','LoginService', '$mdDialog',AppCtrl]); // overall control
         
-    function AppCtrl($scope, $rootScope, $state, $document, appConfig, LoginService) {
+    function AppCtrl($scope, $rootScope, $state, $document, appConfig, LoginService,$mdDialog) {
 
         $scope.pageTransitionOpts = appConfig.pageTransitionOpts;
         $scope.main = appConfig.main;
@@ -36,11 +36,25 @@
             }
         }, true);
 
+        // $rootScope.logout = function(){
+        //     $rootScope.user = null;
+        //     LoginService.deleteTokenFromLocalStorage()
+        //     $state.go('login')
+        // }
         $rootScope.logout = function(){
-            $rootScope.user = null;
-            LoginService.deleteTokenFromLocalStorage()
-            $state.go('login')
-        }
+            var confirm = $mdDialog.confirm()
+                  .title('are you sure you want to logout?')
+                  .ok('ok')
+                  .cancel('cancel');
+        
+            $mdDialog.show(confirm).then(function() {
+              $scope.status = 'ok';
+              LoginService.deleteTokenFromLocalStorage();
+              $state.go('login');
+            }, function() {
+              $scope.status = 'cancel';
+            });
+        };
 
         $rootScope.$on("$stateChangeSuccess", function (event, currentRoute, previousRoute) {
             $document.scrollTo(0, 0);

@@ -19,6 +19,7 @@
                     .state('dashboard', {
                         url: '/dashboard',
                         templateUrl: 'app/dashboard/dashboard.html',
+                        
                         resolve: {
                             protected_route: ['$rootScope','LoginService','$state',function($rootScope,LoginService,$state){
                                 if(!LoginService.getTokenFromLocalStorage()){
